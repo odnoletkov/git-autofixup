@@ -351,19 +351,6 @@ sub commit_fixup {
     return;
 }
 
-sub is_index_dirty {
-    open(my $fh, '-|', 'git status --porcelain') or die "git status: $!\n";
-    my $dirty;
-    while (my $line = <$fh>) {
-        if ($line =~ /^[^?! ]/) {
-            $dirty = 1;
-            last;
-        }
-    }
-    close $fh or die "git status: non-zero exit code\n";
-    return $dirty;
-}
-
 sub get_fixup_hunks_by_sha {
     my $args = shift;
     my $hunks = $args->{hunks};
@@ -444,10 +431,6 @@ sub main {
     chomp $toplevel;
     $? == 0 or die "Can't get repo toplevel dir\n";
     chdir $toplevel or die $!;
-
-    if (is_index_dirty()) {
-        die "There are staged changes. Clean up the index and try again.\n";
-    }
 
     my $hunks = get_diff_hunks($num_context_lines);
     my $summary_for = get_summary_for_commits($upstream);
