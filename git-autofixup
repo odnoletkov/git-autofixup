@@ -425,8 +425,7 @@ sub main {
         pod2usage(-exitval => 0, -verbose => 2);
     }
 
-    @ARGV == 1 or die "No upstream commit given.\n";
-    my $upstream = shift @ARGV;
+    my $upstream = shift @ARGV // '@{upstream}';
     qx(git rev-parse --verify ${upstream}^{commit});
     $? == 0 or die "Can't resolve given commit.\n";
 
