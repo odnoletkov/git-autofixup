@@ -328,7 +328,7 @@ sub blame {
 
 sub get_diff_hunks {
     my $num_context_lines = shift;
-    my @cmd = (qw(git diff --ignore-submodules), "-U$num_context_lines");
+    my @cmd = (qw(git diff --cached --ignore-submodules), "-U$num_context_lines");
     open(my $fh, '-|', @cmd) or die $!;
     my @hunks = parse_hunks($fh, keep_lines => 1);
     close($fh) or die "git diff: non-zero exit code";
@@ -442,6 +442,10 @@ sub main {
         summary_for => $summary_for,
         strict => $strict,
     });
+
+    $ENV{'GIT_INDEX_FILE'} = '.git/tmp-index';
+    qx(git read-tree @^{tree});
+
     while (my ($sha, $fixup_hunks) = each %{$hunks_for}) {
         commit_fixup($sha, $fixup_hunks);
     }
