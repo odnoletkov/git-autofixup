@@ -7,6 +7,7 @@ use warnings FATAL => 'all';
 use Carp qw(croak);
 use Pod::Usage;
 use Getopt::Long qw(:config bundling);
+use File::Temp qw(tempfile);
 
 our $VERSION = 0.002006; # X.YYYZZZ
 
@@ -443,7 +444,7 @@ sub main {
         strict => $strict,
     });
 
-    $ENV{'GIT_INDEX_FILE'} = '.git/tmp-index';
+    (undef, $ENV{'GIT_INDEX_FILE'}) = tempfile(UNLINK => 1);
     qx(git read-tree @^{tree});
 
     while (my ($sha, $fixup_hunks) = each %{$hunks_for}) {
